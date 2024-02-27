@@ -1,7 +1,10 @@
 package com.pikita.my;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -20,11 +23,29 @@ public class MainActivity extends AppCompatActivity {
     MediaPlayer mp;
     AnimationSet animationSet;
 
+    // Click counting
+    int clickCount = 0;
+    int totalClicks = 0;
+
     // Pikita bouncing
-    public static void startBounceAnimation(View view, float distance, long duration) {
+    public void startBounceAnimation(View view, float distance, long duration) {
+        totalClicks++; // Increment total clicks
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "translationY", 0, -distance, 0);
         animator.setDuration(duration);
         animator.start();
+
+        button.setImageResource(R.drawable.base__speak);
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                clickCount++; // Increment click count on animation end
+                if (clickCount >= totalClicks) { // Check if it's the last animation
+                    button.setImageResource(R.drawable.base);
+                    clickCount = 0; // Reset click count
+                    totalClicks = 0; // Reset total clicks
+                }
+            }
+        });
     }
 
     private void playSound() {
@@ -34,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mediaPlayer) {
                 mediaPlayer.release(); // Release the MediaPlayer resource after completion
-                button.setImageResource(R.drawable.base);
+                //button.setImageResource(R.drawable.base);
             }
         });
     }
@@ -56,12 +77,10 @@ public class MainActivity extends AppCompatActivity {
 
         public boolean onTouch(View v, MotionEvent event) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                button.setImageResource(R.drawable.base__speak);
                 playSound();
 
                 // Apply animation to the view
                 startBounceAnimation(v, 150, 600); // This will make the view bounce 200 pixels up and down in 1 second.
-
 
             }
 
