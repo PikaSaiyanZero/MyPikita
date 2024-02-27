@@ -30,11 +30,13 @@ public class MainActivity extends AppCompatActivity {
     // Pikita bouncing
     public void startBounceAnimation(View view, float distance, long duration) {
         totalClicks++; // Increment total clicks
+        // The actual bounce
         ObjectAnimator animator = ObjectAnimator.ofFloat(view, "translationY", 0, -distance, 0);
         animator.setDuration(duration);
         animator.start();
-
+        // Make him speak at animation start
         button.setImageResource(R.drawable.base__speak);
+        // Stop speaking at animation end
         animator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
